@@ -59,6 +59,15 @@ class Users extends Crud
         $this->create_title         =   __( 'Create User' );
         $this->create_description   =   __( 'Create a new user.' );
 
+        /**
+         * In order to validate entries
+         */
+        $this->filterEntries        =   [
+            'active'    =>  function( $value ) {
+                return $value == 1 ? __( 'Active' ) : __( 'Unactive' );
+            }
+        ];
+
         $this->setActions();
     }
 

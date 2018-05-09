@@ -179,19 +179,19 @@ class Crud
         /**
          * Order the current result, according to the mentionned columns
          */
-        if ( $request->query( 'order' ) && $request->query( 'column' ) ) {
+        if ( $request->query( 'descending' ) && $request->query( 'sortBy' ) ) {
             $query->orderBy( 
-                $request->query( 'column' ),
-                $request->query( 'order' )
+                $request->query( 'sortBy' ),
+                $request->query( 'descending' ) == 'false' ? 'asc' : 'desc'
             );
         }
 
         /**
          * let's make the "perPage" value adjustable
          */
-        $perPage    =   20;
-        if ( $request->query( 'per_page' ) ) {
-            $perPage    =   $request->query( 'per_page' );
+        $perPage    =   false;
+        if ( $request->query( 'rowsPerPage' ) != '-1' ) {
+            $perPage    =   $request->query( 'rowsPerPage' );
         }
 
         /**
@@ -207,7 +207,27 @@ class Crud
             }
         }
 
-        return $query->paginate( $perPage );
+        if ( $perPage == false ) {
+            $perPage    =   $query->count();
+        }
+
+        $paginateResult     =   $query->paginate( $perPage );
+
+        /**
+         * if a filter is registered
+         */
+        if ( @$this->filterEntries ) {
+            $paginateResult     =   $paginateResult->toArray();
+            foreach( $paginateResult[ 'data' ] as $index => &$row ) {
+                foreach( ( array ) $row as $column => $value ) {
+                    if ( @$this->filterEntries[ $column ] != null ) {
+                        $paginateResult[ 'data' ][ $index ]->$column =   $this->filterEntries[ $column ]( $value );
+                    }
+                }
+            }
+        }
+
+        return $paginateResult;
     }
 
     /**
