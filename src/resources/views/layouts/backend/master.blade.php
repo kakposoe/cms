@@ -9,11 +9,13 @@
     <script src="{{ asset( 'tendoo/bower_components/axios/dist/axios.min.js' ) }}"></script>
     <script src="{{ asset( 'tendoo/js/vuetify.js' ) }}"></script>
     <script>
+    var TendooEvent     =   new Vue();
     var OptionsData    =   {
         id              :   {!! $Auth::id() !!},
         postUrl         :   "{{ route( 'ajax.set.options' ) }}",
         getUrl          :   "{{ route( 'ajax.get.options' ) }}",
-        deleteUrl       :   "{{ route( 'ajax.delete.options' ) }}"
+        deleteUrl       :   "{{ route( 'ajax.delete.options' ) }}",
+        drawer          :   false
     }
     </script>
     <script src="{{ asset( 'tendoo/js/dashboard/options.js' ) }}"></script>

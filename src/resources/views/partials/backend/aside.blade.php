@@ -34,3 +34,26 @@
 	</v-navigation-drawer>
 </app-menu>
 @endverbatim
+@push( 'vue.components' )
+<script>
+Vue.component( 'app-menu', {
+    mounted() {
+        TendooEvent.$on( 'aside.toggle', drawer => {
+			this.drawer	= drawer;
+		});
+    },
+    data() {
+        return {
+            menus,
+			drawer: false
+        }
+	},
+	computed: {
+		drawer() {
+			console.log( OptionsData.drawer );
+			return OptionsData.drawer;
+		}
+	}
+});
+</script>
+@endpush

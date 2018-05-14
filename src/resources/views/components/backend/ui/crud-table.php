@@ -51,8 +51,8 @@
                                         <v-icon>search</v-icon>
                                     </v-btn>
 
-                                    <v-btn fab href="{{ $resource->getLinks()[ 'create' ][ 'href' ] }}" small dark color="info">
-                                        <v-icon>create</v-icon>
+                                    <v-btn fab small dark color="info">
+                                        <v-icon>home</v-icon>
                                     </v-btn>
                                 </div>
                             </v-flex>
@@ -92,6 +92,7 @@
                                         >
                                     <v-icon small>arrow_upward</v-icon>
                                     @{{ header.text }}
+                                    @{{ selectedNbr }}
                                     </th>
                                 </tr>
                             </template>
@@ -141,29 +142,24 @@ var data    =   {!! json_encode([
 <script type="text/javascript">
     Vue.component( 'app-crud-table', {
         data() {
-            
-            let keys        =   Object.keys( data.columns );
-            let headers     =   [];
-            Object.values( data.columns ).forEach( ( column, index ) => {
-                headers.push({
-                    text    :   column.text,
-                    value   :   keys[ index ],
-                    align   :   column.align || 'right'
-                });
-            });
-
             return {
                 searchStatus     :   'closed',
                 loading     : false,
                 totalItems  :   0,
                 search      :   '',
-                url         :   data.getURL,
+                url         :   data.getUrl,
                 pagination      :   {
                     sortBy  :   'username'
                 },
                 selected    :   [],
                 items       :   [],
-                headers,
+                headers     : [
+                    { text: 'Username', value: 'username', align: 'right' },
+                    { text: 'Email', value: 'email', align: 'right' },
+                    { text: 'Role', value: 'roles_name', align: 'left' },
+                    { text: 'Active', value: 'active', align: 'left' },
+                    { text: 'Created', value: 'created_at', align: 'center' }
+                ],
             }
         },
         watch: {
@@ -244,5 +240,9 @@ var data    =   {!! json_encode([
     })
 </script>
 @endpush
+@section( 'partials.shared.footer' )
+    @parent
+    <script src="{{ asset( 'tendoo/js/dashboard/table.vue.js' ) }}"></script>
+@endsection
 
 @endif
