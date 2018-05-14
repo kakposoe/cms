@@ -62,36 +62,33 @@
                             <template slot="headers" slot-scope="props">
                                 <tr>
                                     <th>
-                                    <v-checkbox
-                                        primary
-                                        hide-details
-                                        @click.native="toggleAll"
-                                        :input-value="selectedNbr == itemsNbr"
-                                        :indeterminate="(selectedNbr != itemsNbr) && selectedNbr > 0"
-                                    ></v-checkbox>
+                                        <v-checkbox
+                                            primary
+                                            hide-details
+                                            @click.native="toggleAll"
+                                            :input-value="props.all"
+                                            :indeterminate="props.indeterminate"
+                                        ></v-checkbox>
                                     </th>
                                     <th
                                         v-for="header in props.headers"
                                         :key="header.text"
-                                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                                        @click="changeSort(header.value)"
-                                        >
-                                    <v-icon small>arrow_upward</v-icon>
-                                    @{{ header.text }}
-                                    @{{ selectedNbr }}
+                                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '', 'text-xs-left']"
+                                        @click="changeSort(header.value)">
+                                        <v-icon small>arrow_upward</v-icon>
+                                        @{{ header.text }}
                                     </th>
                                 </tr>
                             </template>
                             <template slot="items" slot-scope="props">
                                 <tr
-                                    :active="props.item.$selected" 
-                                    @click="props.item.$selected = !props.item.$selected"
-                                >
+                                    :active="props.$selected" 
+                                    @click="props.$selected = !props.$selected">
                                     <td>
                                         <v-checkbox
                                             primary
                                             hide-details
-                                            :input-value="props.item.$selected"
+                                            :input-value="props.$selected"
                                         ></v-checkbox>
                                     </td>
                                     <td>@{{ props.item.username }}</td>
@@ -123,7 +120,7 @@
                 },
                 selected    :   [],
                 items       :   [],
-                headers     : [
+                headers     :   [
                     { text: 'Username', value: 'username', align: 'right' },
                     { text: 'Email', value: 'email', align: 'right' },
                     { text: 'Role', value: 'roles_name', align: 'left' },
@@ -140,26 +137,12 @@
                 deep: true
             }
         },
-        computed : {
-            selectedNbr() {
-                return this.items.filter( item => item.$selected ).length;
-            },
-            itemsNbr() {
-                return this.items.length;
-            }
-        },
         methods : {
+            toggleAll () {
+                if (this.selected.length) this.selected = []
+                else this.selected = this.items.slice()
+            },
             
-            search() {
-                
-            },
-
-            toggleAll() {
-                this.items.forEach( item => {
-                    item.$selected  =   ! item.$selected;
-                });
-            },
-
             changeSort( column ) {
                 if (this.pagination.sortBy === column) {
                     this.pagination.descending = !this.pagination.descending
@@ -172,7 +155,7 @@
                 var str = [];
                 for (var p in object)
                     if (object.hasOwnProperty(p)) {
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(object[p]));
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(object[p]));
                     }
                 return str.join("&");
             },
