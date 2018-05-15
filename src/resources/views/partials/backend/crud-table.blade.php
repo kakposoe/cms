@@ -15,8 +15,6 @@
     $resource   =   new $class;
     @endphp
 
-@extends( 'tendoo::components.backend.master' )
-@section( 'tendoo::components.backend.master.body' )
 <app-crud-table inline-template>
     <v-container fluid class="no-padding" fill-height>
         <v-layout column class="page-header">
@@ -31,6 +29,14 @@
                             <v-flex lg8 d-flex align-end>
                                 <v-spacer></v-spacer>
                                 <div style="flex: none !important;">
+
+                                    <template v-if="selectedNbr > 0">
+                                    @foreach( $resource->getBulkActions()  as $namespace => $link ) 
+                                        <v-btn fab @click="bulkDo( '{{ $namespace }}' )" small dark color="{{ @$link[ 'color' ] ? $link[ 'color' ] : 'info' }}">
+                                            <v-icon>{{ @$link[ 'icon' ] ? $link[ 'icon' ] : 'star' }}</v-icon>
+                                        </v-btn>
+                                    @endforeach
+                                    </template>
 
                                     <template v-if="searchStatus == 'open'">
                                         <div style="display: inline-block; width: 300px;">
@@ -51,9 +57,15 @@
                                         <v-icon>search</v-icon>
                                     </v-btn>
 
-                                    <v-btn fab href="{{ $resource->getLinks()[ 'create' ][ 'href' ] }}" small dark color="info">
-                                        <v-icon>create</v-icon>
-                                    </v-btn>
+                                    @foreach( $resource->getLinks() as $screen => $links )
+                                        @if ( $screen == 'list' ) 
+                                            @foreach( $links as $link )
+                                                <v-btn fab href="{{ $link[ 'href' ] }}" small dark color="info">
+                                                    <v-icon>{{ @$link[ 'icon' ] ? $link[ 'icon' ] : 'star' }}</v-icon>
+                                                </v-btn>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
                                 </div>
                             </v-flex>
                         </v-layout>
@@ -76,22 +88,22 @@
                             <template slot="headers" slot-scope="props">
                                 <tr>
                                     <th>
-                                    <v-checkbox
-                                        primary
-                                        hide-details
-                                        @click.native="toggleAll"
-                                        :input-value="selectedNbr == itemsNbr"
-                                        :indeterminate="(selectedNbr != itemsNbr) && selectedNbr > 0"
-                                    ></v-checkbox>
+                                        <v-checkbox
+                                            primary
+                                            hide-details
+                                            @click.native="toggleAll"
+                                            :input-value="selectedNbr == itemsNbr"
+                                            :indeterminate="(selectedNbr != itemsNbr) && selectedNbr > 0"
+                                        ></v-checkbox>
                                     </th>
                                     <th
                                         v-for="header in props.headers"
                                         :key="header.text"
-                                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                                        :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '', 'text-xs-left' ]"
                                         @click="changeSort(header.value)"
                                         >
-                                    <v-icon small>arrow_upward</v-icon>
-                                    @{{ header.text }}
+                                        @{{ header.text }}
+                                        <v-icon small>arrow_upward</v-icon>
                                     </th>
                                 </tr>
                             </template>
@@ -107,11 +119,9 @@
                                             :input-value="props.item.$selected"
                                         ></v-checkbox>
                                     </td>
-                                    <td>@{{ props.item.username }}</td>
-                                    <td class="text-xs-left">@{{ props.item.email }}</td>
-                                    <td class="text-xs-left">@{{ props.item.active }}</td>
-                                    <td class="text-xs-left">@{{ props.item.roles_name }}</td>
-                                    <td class="text-xs-left">@{{ props.item.created_at }}</td>
+                                    @foreach( $resource->getColumns() as $namespace => $column )
+                                    <td>{{ props.item.<?php echo $namespace;?> }}</td>
+                                    @endforeach
                                 </tr>
                             </template>
                         </v-data-table>
@@ -121,7 +131,6 @@
         </v-layout>
     </v-container>
 </app-crud-table>
-@endsection
 @push( 'vue.components' )
 <script>
 var data    =   {!! json_encode([
@@ -132,10 +141,14 @@ var data    =   {!! json_encode([
     'deleteURL'     =>  route( 'dashboard.crud.delete', [
         'namespace' =>  $resource->getNamespace()
     ]),
+    'bulkActionsURL' =>  route( 'dashboard.crud.bulk-actions', [
+        'namespace' =>  $resource->getNamespace()
+    ]),
     'editURL'       =>  route( 'dashboard.users.edit' ),
     'textDomain'    =>  [
         'deleteSelected'    =>  __( 'Would you like to delete selected entries ?' )
-    ]
+    ],
+    'bulkActions'   =>  $resource->getBulkActions()
 ]) !!}
 </script>
 <script type="text/javascript">
@@ -146,25 +159,26 @@ var data    =   {!! json_encode([
             let headers     =   [];
             Object.values( data.columns ).forEach( ( column, index ) => {
                 headers.push({
-                    text    :   column.text,
-                    value   :   keys[ index ],
-                    align   :   column.align || 'right'
+                    text        :   column.text,
+                    value       :   keys[ index ],
+                    align       :   column.align || 'left',
+                    sortable    :   column.sortable || true
                 });
             });
 
-            return {
+            return Object.assign({}, data, {
                 searchStatus     :   'closed',
                 loading     : false,
                 totalItems  :   0,
                 search      :   '',
                 url         :   data.getURL,
                 pagination      :   {
-                    sortBy  :   'username'
+                    // sortBy  :   'username'
                 },
                 selected    :   [],
                 items       :   [],
-                headers,
-            }
+                headers
+            })
         },
         watch: {
             pagination: {
@@ -183,6 +197,32 @@ var data    =   {!! json_encode([
             }
         },
         methods : {
+
+            __proceedBulkAction( name, action ) {
+                let defaultUrl      =   name == 'delete' ? this.bulkActionsURL : '';
+                let url     =   action.url ? action.url : defaultUrl;
+                let selected    =   this.items
+                        .filter( item => item.$selected )
+                        .map( item => item.id );
+                axios.post( `${url}`, {
+                    entries     :   selected,
+                    action : name
+                }).then( request => {
+                    TendooEvent.$emit( 'show.snackbar', request.data );
+                    this.getEntries();
+                });
+            },
+            
+            bulkDo( actionName ) {
+                let action  =   this.bulkActions[ actionName ];
+                if ( action.shouldConfirm ) {
+                    if ( confirm( action.confirm ? action.confirm : this.textDomain.deleteSelected ) ) {
+                        return this.__proceedBulkAction( actionName, action );
+                    }
+                } else {
+                    return this.__proceedBulkAction( actionName, action );
+                }
+            },
             
             search() {
                 
@@ -217,10 +257,10 @@ var data    =   {!! json_encode([
                     case 'open': this.searchStatus = 'closed'; break;
                     default: this.searchStatus = 'closed'; break; // we never know
                 }
-
                 this.getEntries();
             },
             getEntries() {
+
                 this.loading    =   true;
                 let pagination  =   Object.assign({}, this.pagination );
                 // delete pagination.handler;

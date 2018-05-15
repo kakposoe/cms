@@ -1,6 +1,7 @@
 @inject( 'Menus', 'Tendoo\Core\Services\Menus' )
 @inject( 'Hook', 'Tendoo\Core\Facades\Hook' )
 @inject( 'UserOptions', 'Tendoo\Core\Services\UserOptions' )
+@include( 'tendoo::vue.components-loader' )
 @extends( 'tendoo::layouts.backend.master' )
 @section( 'tendoo::layouts.backend.master.body' )
     @include( 'tendoo::partials.backend.aside', [

@@ -19,6 +19,7 @@ class CrudController extends TendooController
         $this->middleware( function( $request, $next ) {
             return $next( $request );
         });
+        \Debugbar::disable();
     }
 
     /**
@@ -267,7 +268,7 @@ class CrudController extends TendooController
          * In case nothing handle this crud
          */
         if ( ! class_exists( $crudClass ) ) {
-            return redirect()->route( 'errors', [ 'code' => 'unhandled-crud-resource' ]);
+            return new Exception( __( 'Unhandled CRUD resource' ) );
         }
         
         $resource   =   new $crudClass;
@@ -276,7 +277,7 @@ class CrudController extends TendooController
          * Check if an entry is selected, 
          * else throw an error
          */
-        if ( $request->input( 'entry_id' ) == null ) {
+        if ( $request->input( 'entries' ) == null ) {
             // return redirect()->route( $resource->getMainRoute() )->with();
             return [
                 'status'    =>  'danger',
@@ -284,25 +285,42 @@ class CrudController extends TendooController
             ];
         }
 
-        if ( $request->input( 'action' ) == null ) {
+        $actionsNames   =   array_keys( $resource->getBulkActions() );
+
+        /**
+         * Let's check if the action is allowed/registered
+         */
+        if ( ! in_array( $request->input( 'action' ), $actionsNames ) ) {
             return [
                 'status'    =>  'danger',
-                'message'   =>  __( 'You must select an action to perform.' )
+                'message'   =>  sprintf( __( 'Unknow or not allowed action to perform : %s.' ), $request->input( 'action' ) )
             ];
         }
 
-        $response           =   $resource->bulkDelete( $request );
-        $errors             =   [];
+        /**
+         * Call the default actions
+         */
+        switch( $request->input( 'action' ) ) {
+            case 'delete': $response = $resource->bulkDelete( $request );break;
+        }
+
+        /**
+         * Retreive errors
+         */
+        $message             =   '';
 
         if ( $response[ 'success' ] > 0 ) {
-            $errors[ 'success' ]    =   sprintf( $resource->bulkDeleteSuccessMessage, $response[ 'success' ]);
+            $message    .=   sprintf( $resource->bulkDeleteSuccessMessage, $response[ 'success' ]);
         } 
         
         if ( $response[ 'danger' ] > 0 ) {
-            $errors[ 'danger' ]     =   sprintf( $resource->bulkDeleteDangerMessage, $response[ 'danger' ]);
+            $message    .=   '& ' . sprintf( $resource->bulkDeleteDangerMessage, $response[ 'danger' ]);
         }
 
-        return redirect()->route( $resource->getMainRoute() )->with( $errors );
+        return [
+            'status'    =>  'info',
+            'message'   =>  $message
+        ];
     }
 
     /**

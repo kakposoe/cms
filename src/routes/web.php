@@ -206,5 +206,6 @@ Route::middleware([ 'app.installed' ])->group(function(){
         Route::delete( '{id}', 'Tendoo\Core\Http\Controllers\ApiController@delete' )->name( 'api.delete' );
         Route::put( '{id}', 'Tendoo\Core\Http\Controllers\ApiController@put' )->name( 'api.put' );
         Route::post( '', 'Tendoo\Core\Http\Controllers\ApiController@single' )->name( 'api.post' );
+        Route::post( '', 'Tendoo\Core\Http\Controllers\ApiController@bulkDelete' )->name( 'api.post' );
     });
 });

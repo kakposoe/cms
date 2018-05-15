@@ -240,13 +240,14 @@ class Users extends Crud
      */
     public function bulkDelete( Request $request ) 
     {
-        if ( $request->input( 'action' ) == 'delete_selected' ) {
-            $status     =   [
-                'success'   =>  0,
-                'danger'    =>  0
-            ];
+        $status     =   [
+            'success'   =>  0,
+            'danger'    =>  0
+        ];
+        
+        if ( $request->input( 'action' ) == 'delete' ) {
 
-            foreach ( $request->input( 'entry_id' ) as $id ) {
+            foreach ( $request->input( 'entries' ) as $id ) {
                 if ( ( int ) $id == Auth::id() ) {
                     $status[ 'danger' ]++;
                 } else {
@@ -261,31 +262,37 @@ class Users extends Crud
                     }
                 }
             }
-            return $status;
         }
-        return false;
+        return $status;
     }
 
     /**
      * get Links
+     * hold all link for differents screens
      * @return array of links
      */
     public function getLinks()
     {
         return  [
             'list'  =>  [
-                'href'    =>  route( 'dashboard.users.create' ), 
-                'text' => __( 'Add a user' ) 
+                [
+                    'href'    =>  route( 'dashboard.users.create' ), 
+                    'text' => __( 'Add a user' ) 
+                ]
             ],
             'create'    =>  [
-                'href'    =>  route( 'dashboard.users.create' ), 
-                'text' => __( 'Return' ), 
-                'class' => 'btn btn-raised btn-secondary'
+                [
+                    'href'    =>  route( 'dashboard.users.list' ), 
+                    'text' => __( 'Return' ), 
+                    'class' => 'btn btn-raised btn-secondary'
+                ]
             ],
             'edit'      =>  [
-                'href'    =>  route( 'dashboard.users.list' ), 
-                'text' => __( 'Return' ), 
-                'class' => 'btn btn-raised btn-secondary' 
+                [
+                    'href'    =>  route( 'dashboard.users.list' ), 
+                    'text' => __( 'Return' ), 
+                    'class' => 'btn btn-raised btn-secondary' 
+                ]
             ]
         ];
     }
@@ -298,5 +305,25 @@ class Users extends Crud
     public function deleteOptions( $user_id )
     {
         OptionModel::where( 'user_id', $user_id )->delete();
+    }
+
+    /**
+     * Bulk actions
+     * register bulk action
+     * it's used to check supported actions
+     * @todo add it to the generator
+     * @return array of actions
+     */
+    public function getBulkActions()
+    {
+        return [
+            'delete'    =>  [
+                'type'              =>  'GET',
+                'text'              =>  __( 'Delete all' ),
+                'icon'              =>  'delete_forever',
+                'color'             =>  'warning',
+                'shouldConfirm'     =>  true
+            ]
+        ];
     }
 }

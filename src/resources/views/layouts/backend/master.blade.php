@@ -45,6 +45,7 @@
 <div id="vue-application" style="display:none">
     <v-app id="inspire">
         @yield( 'tendoo::layouts.backend.master.body' )
+        @stack( 'vue.footer' )
     </v-app>
 </div>
 @include( 'tendoo::partials.shared.footer' )
