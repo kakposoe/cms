@@ -20,6 +20,19 @@ class Users extends Crud
      * base route name
      */
     protected $mainRoute      =   'dashboard.users.list';
+    protected $listRoute      =   'dashboard.users.list';
+
+    /**
+     * edit route
+     * @todo add to the generator
+     */
+    protected $editRoute    =   'dashboard.users.edit';
+
+    /**
+     * create route
+     * @todo add to the generator
+     */
+    protected $addRoute     =   'dashboard.users.create';
 
     /**
      * Define namespace
@@ -68,7 +81,11 @@ class Users extends Crud
             }
         ];
 
-        $this->setActions();
+        /**
+         * register entry actions hook
+         * @todo register it on the generator
+         */
+        Hook::addFilter( 'crud.entry.actions', [ $this, 'setActions' ], 10, 3 );
     }
 
     /**
@@ -175,6 +192,11 @@ class Users extends Crud
     {
         switch( $param ) {
             case 'model' : return $this->model ; break;
+            /**
+             * @todo add to the generator
+             */
+            case 'main-route' : return $this->mainRoute ; break;
+            case 'namespace' : return $this->namespace ; break;
         }
     }
 
@@ -211,26 +233,20 @@ class Users extends Crud
     /**
      * Define actions
      */
-    public function setActions()
+    public function setActions( $actions, $row, $namespace )
     {
-        /**
-         * @hook:users.crud.actions
-         * Let you filter actions available on the user CRUD.
-         */
-        $this->actions      =   Hook::filter( 'users.crud.actions', [
-            'edit'      =>  [
-                'text'  =>  __( 'Edit' ),
-                'type'  =>  'GET',
-                'url'   =>  url()->route( 'dashboard.users.edit' )
-            ],
-            'delete'    =>  [
-                'type'  =>  'DELETE',
-                    'url'   =>  url()->route( 'dashboard.crud.delete', [ 
-                    'namespace'     =>  'users'
-                ]),
-                'text'  =>  __( 'Delete' )
-            ]
-        ]);
+        if ( $namespace != 'users' ) {
+            return $actions;
+        }
+
+        if ( Auth::id() == $row->id ) {
+            unset( $actions[ 'delete' ] );
+            $actions[ 'edit' ][ 'text' ]  =   __( 'My Profile' );
+        } else {
+            $actions[ 'delete' ][ 'text' ]  =   __( 'Delete User' );
+            $actions[ 'edit' ][ 'text' ]  =   __( 'Edit User' );
+        }
+        return $actions;
     }
 
     /**
@@ -277,21 +293,22 @@ class Users extends Crud
             'list'  =>  [
                 [
                     'href'    =>  route( 'dashboard.users.create' ), 
-                    'text' => __( 'Add a user' ) 
+                    'text' => __( 'Add a user' ),
+                    'icon'  =>  'person_add'
                 ]
             ],
             'create'    =>  [
                 [
                     'href'    =>  route( 'dashboard.users.list' ), 
                     'text' => __( 'Return' ), 
-                    'class' => 'btn btn-raised btn-secondary'
+                    'icon' => 'arrow_back'
                 ]
             ],
             'edit'      =>  [
                 [
                     'href'    =>  route( 'dashboard.users.list' ), 
                     'text' => __( 'Return' ), 
-                    'class' => 'btn btn-raised btn-secondary' 
+                    'class' => 'arrow_back' 
                 ]
             ]
         ];

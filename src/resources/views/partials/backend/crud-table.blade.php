@@ -40,11 +40,11 @@
 
                                     <template v-if="searchStatus == 'open'">
                                         <div style="display: inline-block; width: 300px;">
-                                            <v-text-field solo label="{{ __( 'Search' ) }}"></v-text-field>
+                                            <v-text-field v-model="search" solo label="{{ __( 'Search' ) }}"></v-text-field>
                                         </div>
     
                                         <!-- When Open -->
-                                        <v-btn @click="search()" fab small dark color="success">
+                                        <v-btn @click="searchEntry()" fab small dark color="success">
                                             <v-icon>search</v-icon>
                                         </v-btn>
                                         <v-btn @click="toggleSearch()" fab small dark color="warning">
@@ -87,7 +87,7 @@
                         >
                             <template slot="headers" slot-scope="props">
                                 <tr>
-                                    <th>
+                                    <th style="width:10px;">
                                         <v-checkbox
                                             primary
                                             hide-details
@@ -105,6 +105,7 @@
                                         @{{ header.text }}
                                         <v-icon small>arrow_upward</v-icon>
                                     </th>
+                                    <th style="width: 10px;">Actions</th>
                                 </tr>
                             </template>
                             <template slot="items" slot-scope="props">
@@ -122,6 +123,18 @@
                                     @foreach( $resource->getColumns() as $namespace => $column )
                                     <td>{{ props.item.<?php echo $namespace;?> }}</td>
                                     @endforeach
+                                    <td>
+                                        <v-menu bottom left>
+                                            <v-btn slot="activator" icon>
+                                            <v-icon>more_vert</v-icon>
+                                            </v-btn>
+                                            <v-list>
+                                            <v-list-tile v-for="(action, namespace) in props.item.$actions" :key="namespace" @click="handle( action, props.item )">
+                                                <v-list-tile-title>@{{ action.text }}</v-list-tile-title>
+                                            </v-list-tile>
+                                            </v-list>
+                                        </v-menu>
+                                    </td>
                                 </tr>
                             </template>
                         </v-data-table>
@@ -138,13 +151,9 @@ var data    =   {!! json_encode([
     'getURL'        =>  route( 'dashboard.crud.list', [
         'namespace' =>  $resource->getNamespace()
     ]),
-    'deleteURL'     =>  route( 'dashboard.crud.delete', [
-        'namespace' =>  $resource->getNamespace()
-    ]),
     'bulkActionsURL' =>  route( 'dashboard.crud.bulk-actions', [
         'namespace' =>  $resource->getNamespace()
     ]),
-    'editURL'       =>  route( 'dashboard.users.edit' ),
     'textDomain'    =>  [
         'deleteSelected'    =>  __( 'Would you like to delete selected entries ?' )
     ],
@@ -173,7 +182,8 @@ var data    =   {!! json_encode([
                 search      :   '',
                 url         :   data.getURL,
                 pagination      :   {
-                    // sortBy  :   'username'
+                    // sortBy  :   'username',
+                    search  :   ''
                 },
                 selected    :   [],
                 items       :   [],
@@ -223,9 +233,42 @@ var data    =   {!! json_encode([
                     return this.__proceedBulkAction( actionName, action );
                 }
             },
+
+            handle( action, entry ) {
+                // the action might require an ajax request
+                // or the browser to perform a redirection
+                if ( action.ajax ) {
+                    if ( action.confirm == true ) {
+                        if ( confirm( action.confirmText ) ) {
+                            return this.__performEntryAction( action, entry );
+                        }
+                    } else {
+                        return this.__performEntryAction( action, entry );
+                    }
+                } else {
+                    if ( action.confirm == true ) {
+                        if ( confirm( action.confirmText ) ) {
+                            document.location   =   action.url;
+                        }
+                    } else {
+                        document.location   =   action.url;
+                    }
+                }
+            },
+
+            __performEntryAction( action, entry ) {
+                // if a method is not defined, let's use "get" as the default method
+                axios[ action.method ? action.method : 'get' ]( `${action.url}`, action.params ? action.params : {} ).then( result => {
+                    this.getEntries();
+                    TendooEvent.$emit( 'show.snackbar', result.data );
+                }).catch( error => {
+                    TendooEvent.$emit( 'show.snackbar', error.response.data );
+                });
+            },
             
-            search() {
-                
+            searchEntry() {
+                this.pagination.search  =   this.search;
+                this.getEntries();
             },
 
             toggleAll() {
@@ -257,6 +300,13 @@ var data    =   {!! json_encode([
                     case 'open': this.searchStatus = 'closed'; break;
                     default: this.searchStatus = 'closed'; break; // we never know
                 }
+
+                // if the search field is hidden, let's remove the search value
+                if ( this.searchStatus == 'closed' ) {
+                    this.pagination.search      =   '';
+                    this.search                 =   '';
+                }
+
                 this.getEntries();
             },
             getEntries() {

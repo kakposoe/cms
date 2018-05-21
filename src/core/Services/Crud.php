@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use Tendoo\Core\Facades\Hook;
 
 class Crud 
 {
@@ -224,6 +225,32 @@ class Crud
                         $paginateResult[ 'data' ][ $index ]->$column =   $this->filterEntries[ $column ]( $value );
                     }
                 }
+
+                /**
+                 * register action for each entries
+                 * @hook crud.entry.actions
+                 * @todo add it to the generator
+                 */
+                $row->{'$actions'}  =   Hook::filter( 'crud.entry.actions', [
+                    'delete'    =>  [
+                        'text'  =>  __( 'Delete' ),
+                        'url'   =>  route( 'dashboard.crud.delete', [
+                            'namespace' =>  $this->getNamespace(),
+                            'id'        =>  $row->id
+                        ]),
+                        'ajax'      =>  true,
+                        'confirm'   =>  true, // if the action require a confirmation
+                        'confirmText'   =>  __( 'Would you like to delete this entry ?' ),
+                        'method'    =>  'delete'
+                    ],
+                    'edit'    =>  [
+                        'text'  =>  __( 'Edit' ),
+                        'url'   =>  route( $this->editRoute, [
+                            'entry'        =>  $row->id
+                        ]),
+                        'ajax'          =>  false
+                    ]
+                ], $row, $this->getNamespace() );
             }
         }
 

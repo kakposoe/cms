@@ -139,15 +139,15 @@ class CrudController extends TendooController
         /**
          * @todo adding a link to edit the new entry
          */
-        return redirect()->route( $resource->getMainRoute() )->with([
-            'status'    =>  'success',
-            'message'   =>  __( 'A new entry has been successfully created.' )
-        ]);
-
-        // return [
+        // return redirect()->route( $resource->getMainRoute() )->with([
         //     'status'    =>  'success',
-        //     'message'   =>  __( 'A new entry has been successfully created' )
-        // ];
+        //     'message'   =>  __( 'A new entry has been successfully created.' )
+        // ]);
+
+        return [
+            'status'    =>  'success',
+            'message'   =>  __( 'A new entry has been successfully created' )
+        ];
     }
 
     /**
@@ -222,14 +222,14 @@ class CrudController extends TendooController
         /**
          * @todo adding a link to edit the new entry
          */
-        return redirect()->route( $resource->getMainRoute() )->with([
-            'status'    =>  'success',
-            'message'   =>  __( 'An new entry has been successfully updated.' )
-        ]);
-        // return [
+        // return redirect()->route( $resource->getMainRoute() )->with([
         //     'status'    =>  'success',
         //     'message'   =>  __( 'An new entry has been successfully updated.' )
-        // ];
+        // ]);
+        return [
+            'status'    =>  'success',
+            'message'   =>  __( 'An new entry has been successfully updated.' )
+        ];
     }
 
     /**
@@ -307,19 +307,19 @@ class CrudController extends TendooController
         /**
          * Retreive errors
          */
-        $message             =   '';
+        $message             =   [];
 
         if ( $response[ 'success' ] > 0 ) {
-            $message    .=   sprintf( $resource->bulkDeleteSuccessMessage, $response[ 'success' ]);
+            $message[]  =   sprintf( $resource->bulkDeleteSuccessMessage, $response[ 'success' ]);
         } 
         
         if ( $response[ 'danger' ] > 0 ) {
-            $message    .=   '& ' . sprintf( $resource->bulkDeleteDangerMessage, $response[ 'danger' ]);
+            $message[]  =   sprintf( $resource->bulkDeleteDangerMessage, $response[ 'danger' ]);
         }
 
         return [
             'status'    =>  'info',
-            'message'   =>  $message
+            'message'   =>  implode( ', ', $message )
         ];
     }
 

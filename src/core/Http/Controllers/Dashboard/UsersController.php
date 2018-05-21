@@ -54,19 +54,17 @@ class UsersController extends TendooController
      */
     public function editUser( User $entry )
     {
-        $this->checkPermission( 'update.users' );
-
         /**
          * If the user who attempt to edit is the currently logged user.
          * We should redirect him to his profile
          * where he can't edit his role
          */
-        if ( Auth::id() == $entry->id ) {
+        if ( Auth::id() === $entry->id ) {
             return redirect()->route( 'dashboard.users.profile.general' );
         }
 
         $this->setTitle( __( 'Edit a user' ) );
-        return view( 'tendoo::components.backend.edit-user' );
+        return view( 'tendoo::components.backend.edit-user', compact( 'entry' ) );
     }
 
     /**

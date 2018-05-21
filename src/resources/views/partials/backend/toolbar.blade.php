@@ -32,7 +32,7 @@
 <script>
 Vue.component( 'app-toolbar', {
     mounted() {
-        console.log( OptionsData );
+        // console.log( OptionsData );
     },
     methods: {
         /**

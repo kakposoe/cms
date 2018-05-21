@@ -33,7 +33,7 @@ $BasicRoutes    =   function() {
     Route::get( '/dashboard/profile/general', 'Tendoo\Core\Http\Controllers\Dashboard\UsersController@showGeneral' )->name( 'dashboard.users.profile.general' );
     Route::get( '/dashboard/profile/security', 'Tendoo\Core\Http\Controllers\Dashboard\UsersController@showSecurity' )->name( 'dashboard.users.profile.security' );
     Route::get( '/dashboard/profile/oauth', 'Tendoo\Core\Http\Controllers\Dashboard\UsersController@showOauth' )->name( 'dashboard.users.profile.oauth' );
-    Route::get( '/dashboard/users/{entry?}', 'Tendoo\Core\Http\Controllers\Dashboard\UsersController@editUser' )->name( 'dashboard.users.edit' );
+    Route::get( '/dashboard/users/{entry}', 'Tendoo\Core\Http\Controllers\Dashboard\UsersController@editUser' )->name( 'dashboard.users.edit' );
     
     /**
      * Module Get Routes
