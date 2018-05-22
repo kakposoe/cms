@@ -10,13 +10,16 @@ $tabs           =   [
         'namespace' =>  'list',
         'title'     =>  __( 'List' )
     ], [
-        'namespace' =>  'install',
-        'title'     =>  __( 'Install' )
+        'namespace' =>  'upload',
+        'title'     =>  __( 'Upload' )
     ]
-]
+];
+$textDomain     =   [
+    'removeConfirm' =>  __( 'Would you like to remove this module ?' )
+];
 @endphp
 <app-modules inline-template>
-    <v-container fluid class="no-padding" fill-height>
+    <v-container fluid class="no-padding grey lighten-2" fill-height>
         <v-layout column>
             <v-flex d-block style="height: 160px;flex: none" class="primary pa-4">
                 <v-layout column>
@@ -55,62 +58,41 @@ $tabs           =   [
                             v-for="tab in tabs"
                             :key="tab.namespace"
                         >
-                            <template v-for="modules of modulesRows">
-                                <v-layout row>
-                                    <template>
-                                        <v-flex xs12 sm6 md4 lg3 xl3 v-for="module of modules">
-                                            <v-card>
+                            <template v-if="tab.namespace == 'list'" v-for="modules of modulesRows">
+                                <v-layout class="white">
+                                    <template row>
+                                        <v-flex d-flex xs12 sm6 md4 lg3 xl3 v-for="module of modules">
+                                            <v-layout column>
                                                 <v-container fluid grid-list-lg>
-                                                    <v-layout row>
-                                                    <v-flex xs7>
-                                                        <div>
-                                                            <div class="headline">Supermodel</div>
-                                                            <div>Foster the People</div>
-                                                        </div>
-                                                    </v-flex>
-                                                    <v-flex xs5>
-                                                        <v-card-media
-                                                        src="/static/doc-images/cards/foster.jpg"
-                                                        height="125px"
-                                                        contain
-                                                        ></v-card-media>
-                                                    </v-flex>
-                                                    </v-layout>
+                                                    <div>
+                                                        <div class="headline">@{{ module.name }}</div>
+                                                        <div>@{{ module.description }}</div>
+                                                    </div>
                                                 </v-container>
-                                                <v-divider></v-divider>
-                                                <v-card-actions>
-                                                    <v-btn flat color="orange">Share</v-btn>
-                                                    <v-btn flat color="orange">Explore</v-btn>
-                                                </v-card-actions>
-                                            </v-card>
-                                        </v-flex>
-                                    </template>
-                                        <!-- <v-card>
-                                            <v-card-title primary-title>
-                                                <div>
-                                                    <h3 class="headline mb-0">@{{ module.name }}</h3>
-                                                    <div>@{{ module.description }} <small>( @{{ module.version }} )</small></div>
-                                                </div>
-                                            </v-card-title>
-                                            <v-card-actions>
-                                                <v-btn-toggle v-model="module.toggles">
-                                                    <v-btn v-if="module.enabled" :href="'{{ route( 'dashboard.modules.enable', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="orange">
-                                                        <v-icon>check_circle</v-icon>
+                                                <div><v-divider></v-divider></div>
+                                                <div class="module-actions">
+                                                    <v-btn class="module-buttons" v-if="! module.enabled" :href="'{{ route( 'dashboard.modules.enable', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="primary">
+                                                        {{ __( 'Enable' ) }}
                                                     </v-btn>
-                                                    <v-btn v-else-if="! module.enabled" :href="'{{ route( 'dashboard.modules.disable', [ 'namespace' => '' ] ) }}'/ + module.namespace" flat color="primary">
-                                                        <v-icon>highlight_off</v-icon>
+                                                    <v-btn class="module-buttons" v-else-if="module.enabled" :href="'{{ route( 'dashboard.modules.disable', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="primary">
+                                                        {{ __( 'Disable' ) }}
                                                     </v-btn>
-                                                    <v-btn :href="'{{ route( 'dashboard.modules.delete', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="red">
-                                                        <v-icon>delete_forever</v-icon>
+                                                    <v-btn class="module-buttons" @click="confirmModuleRemove( '{{ route( 'dashboard.modules.delete', [ 'namespace' => '' ] ) }}/' + module.namespace )" flat color="red">
+                                                        {{ __( 'Remove' ) }}
                                                     </v-btn>
-                                                    <v-btn :href="'{{ route( 'dashboard.modules.extract', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="green">
+                                                    <v-btn class="module-buttons" :href="'{{ route( 'dashboard.modules.extract', [ 'namespace' => '' ] ) }}/' + module.namespace" flat color="green">
                                                         <v-icon>file_download</v-icon>
                                                     </v-btn>
-                                                </v-btn-toggle>
-                                            </v-card-actions>
-                                        </v-card> -->
+                                                </div>
+                                            </v-layout>
+                                        </v-flex>
+                                    </template>
                                 </v-layout>
                                 <v-divider></v-divider>
+                            </template>
+
+                            <template v-if="tab.namespace == 'upload'">
+                                
                             </template>
                         </v-tab-item>
                     </v-tabs>
@@ -125,7 +107,8 @@ $tabs           =   [
 var data    =   {
     modules     :   @json( $collection ),
     tabs        :   @json( $tabs ),
-    perLines    :   1
+    perLines    :   4,
+    textDomain  :   @json( $textDomain )
 }
 Vue.component( 'app-modules', {
     data() {
@@ -133,6 +116,13 @@ Vue.component( 'app-modules', {
             active: null,
             text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
         });
+    },
+    methods : {
+        confirmModuleRemove( link ) {
+            if ( confirm( this.textDomain.removeConfirm ) ) {
+                document.location   =   link;
+            }
+        }
     },
     computed : {
         modulesRows() {
@@ -152,6 +142,9 @@ Vue.component( 'app-modules', {
 .modules-box {
     position: relative;
     top: -72px;
+}
+.module-actions .module-buttons {
+    min-width: inherit;
 }
 </style>
 @endpush
