@@ -147,44 +147,56 @@ class ModulesController extends TendooController
         switch ( $result[ 'code' ] ) {
             case 'invalid_module' :
                 Event::fire( 'after.uploading.module', $result );
-                return redirect()->route( 'dashboard.modules.list' )->with([
+                $response   =   [
                     'status'    =>  'danger',
-                    'message'   =>  __( 'The zip file is not a valid module.' )
-                ]);
+                    'message'   =>  __( 'The zip file is not a valid module.' ),
+                    'route'     =>  'dashboard.modules.list'
+                ];
             break;
             case 'old_module' : 
                 Event::fire( 'after.uploading.module', $result );
-                return redirect()->route( 'dashboard.modules.list' )->with([
+                $response   =   [
                     'status'    =>  'info',
+                    'route'     =>  'dashboard.modules.list',
                     /**
                      * @todo we might offer solution to overwrite existing module
                      */
                     'message'   =>  __( 'The similar module found is up-to-date. Please remove this module before proceeding' )
-                ]);
+                ];
             break;
             case 'valid_module':
                 Event::fire( 'after.uploading.module', $result );
-                return redirect()->route( 'dashboard.modules.list' )->with([
+                $response   =   [
                     'status'    =>  'success',
-                    'message'   =>  __( 'the module has been installed.' )
-                ]);
+                    'message'   =>  __( 'the module has been installed.' ),
+                    'route'     =>  'dashboard.modules.list'
+                ];
             break;
             case 'check_for_migration':
                 Event::fire( 'after.uploading.module', $result );
-                return redirect()->route( 'dashboard.modules.migration', [
-                    'namespace'     =>  $result[ 'module' ][ 'namespace' ]
-                ])->with([
+                $response       =   [
                     'status'    =>  'success',
-                    'message'   =>  __( 'the module has been installed.' )
-                ]);
+                    'message'   =>  __( 'the module has been installed.' ),
+                    'namespace' =>  $result[ 'module' ][ 'namespace' ],
+                    'route'     =>  'dashboard.modules.migration'
+                ];
             break;
             default:
                 Event::fire( 'after.uploading.module', $result );
-                return redirect()->route( 'dashboard.modules.list' )->with([
+                $response       =   [
                     'status'    =>  'info',
-                    'message'   =>  __( 'An unexpected error occured.' )
-                ]);
+                    'message'   =>  __( 'An unexpected error occured.' ),
+                    'route'     =>  'dashboard.modules.list'
+                ];
             break;
+        }
+
+        if ( $request->ajax() ) {
+            return $response;
+        } else {
+            return redirect()->route( $response[ 'route' ], [
+                'namespace'     =>  @$response[ 'namespace' ]
+            ])->with( $response );
         }
     }
 

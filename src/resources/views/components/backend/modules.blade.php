@@ -15,7 +15,11 @@ $tabs           =   [
     ]
 ];
 $textDomain     =   [
-    'removeConfirm' =>  __( 'Would you like to remove this module ?' )
+    'removeConfirm'     =>  __( 'Would you like to remove this module ?' ),
+    'uploading'         =>  __( 'Uploading...' ),
+    'wrongFileType'     =>  __( 'A wrong file type has been selected. Only ".zip" files are allowed' ),
+    'uploadComplete'    =>  __( 'The module has been correctly uploaded.' ),
+    'requireFile'       =>  __( 'Please select a file !' )
 ];
 @endphp
 <app-modules inline-template>
@@ -92,7 +96,22 @@ $textDomain     =   [
                             </template>
 
                             <template v-if="tab.namespace == 'upload'">
-                                
+                                <div class="white">
+                                    <div class="px-2 pt-2">
+                                        <v-alert :value="true" type="info">
+                                            {{ __( 'Please select the zip file that you would like to upload as a module' ) }}
+                                        </v-alert>
+                                    </div>
+                                    <form @submit="asyncSubmit( $event )" enctype="multipart/form-data" method="post">
+                                        <div class="pa-2">
+                                            <input type="file" v-model="module" name="module" id="module-field">
+                                        </div>
+                                        <v-divider></v-divider>
+                                        <div>
+                                            <v-btn :disabled="isUploading" color="success" type="submit">{{ __( 'Upload' ) }}</v-btn>
+                                        </div>
+                                    </form>
+                                </div>
                             </template>
                         </v-tab-item>
                     </v-tabs>
@@ -108,12 +127,18 @@ var data    =   {
     modules     :   @json( $collection ),
     tabs        :   @json( $tabs ),
     perLines    :   4,
-    textDomain  :   @json( $textDomain )
+    csrfToken   :   '{{ csrf_token() }}',
+    textDomain  :   @json( $textDomain ),
+    url     :   {
+        upload  :   "{{ route( 'dashboard.modules.post' ) }}"
+    }
 }
 Vue.component( 'app-modules', {
     data() {
         return Object.assign({}, data, {
+            module: "",
             active: null,
+            isUploading: false,
             text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
         });
     },
@@ -121,6 +146,41 @@ Vue.component( 'app-modules', {
         confirmModuleRemove( link ) {
             if ( confirm( this.textDomain.removeConfirm ) ) {
                 document.location   =   link;
+            }
+        },
+
+        asyncSubmit( event ) {
+            event.preventDefault();
+            let files           =   $( '#module-field' )[0].files;
+            let form            =   new FormData();
+            let xhr             =   new XMLHttpRequest();
+
+            if ( files[0] === undefined ) {
+                return TendooEvent.$emit( 'show.snackbar', { message : this.textDomain.requireFile });
+            }
+
+            if ( files[0].type === 'application/x-zip-compressed' ) {
+                // Ten dooEvent.$emit( 'show.snackbar', { message : this.textDomain.uploading, status : 'info', duration : 1000 });
+                this.isUploading    =   true;
+                form.append( 'module', files[0], files[0].name );
+                form.append( 'csrf-token', this.csrfToken );
+
+                xhr.open( 'POST', this.url.upload, true );
+                xhr.setRequestHeader( 'X-CSRF-TOKEN', this.csrfToken );
+                xhr.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' );
+                xhr.onload      =   ( res ) => {
+                    let response    =   JSON.parse( xhr.response );
+                    console.log( response.message );
+                    TendooEvent.$emit( 'show.snackbar', {
+                        message     :   response.message
+                    });
+                    this.isUploading    =   false;
+                }
+                xhr.send( form );
+
+            } else {
+                this.module     =   '';
+                TendooEvent.$emit( 'show.snackbar', { message : this.textDomain.wrongFileType })
             }
         }
     },

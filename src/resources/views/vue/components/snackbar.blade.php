@@ -72,7 +72,10 @@ Vue.component( 'app-snackbar', {
     }, 
     mounted() {
         TendooEvent.$on( 'show.snackbar', ( config ) => {
+            this.sb1.snackbar   =   false;
+            this.sb1.timeout    =   0;
             this.sb1.snackbar   =   true;
+            this.sb1.timeout    =   config.timeout ? config.timeout : 6000;
             this.sb1.text       =   config.message;
 
             switch( config.status ) {
