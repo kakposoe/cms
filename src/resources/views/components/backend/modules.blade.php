@@ -62,10 +62,17 @@ $textDomain     =   [
                             v-for="tab in tabs"
                             :key="tab.namespace"
                         >
+                            <template v-if="modulesRows.length == 0 && tab.namespace == 'list'">
+                                <v-layout class="white">
+                                    <v-flex class="white pa-4">
+                                        <h3 v-for="modulesRows.length == 0">{{ __( 'No modules are installed' ) }}</h3>
+                                    </v-flex>
+                                </v-layout>
+                            </template>
                             <template v-if="tab.namespace == 'list'" v-for="modules of modulesRows">
                                 <v-layout class="white">
                                     <template row>
-                                        <v-flex d-flex xs12 sm6 md4 lg3 xl3 v-for="module of modules">
+                                        <v-flex d-flex xs12 sm6 md4 lg3 xl3 v-for="module of modules" style="border-right: solid 1px #e0e0e0">
                                             <v-layout column>
                                                 <v-container fluid grid-list-lg>
                                                     <div>
@@ -159,7 +166,7 @@ Vue.component( 'app-modules', {
                 return TendooEvent.$emit( 'show.snackbar', { message : this.textDomain.requireFile });
             }
 
-            if ( files[0].type === 'application/x-zip-compressed' ) {
+            if ( [ 'application/zip', 'application/x-zip-compressed' ].indexOf( files[0].type ) != -1 ) {
                 // Ten dooEvent.$emit( 'show.snackbar', { message : this.textDomain.uploading, status : 'info', duration : 1000 });
                 this.isUploading    =   true;
                 form.append( 'module', files[0], files[0].name );
@@ -170,11 +177,18 @@ Vue.component( 'app-modules', {
                 xhr.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' );
                 xhr.onload      =   ( res ) => {
                     let response    =   JSON.parse( xhr.response );
-                    console.log( response.message );
                     TendooEvent.$emit( 'show.snackbar', {
                         message     :   response.message
                     });
+
                     this.isUploading    =   false;
+
+                    setTimeout( () => {
+                        if ( response.status == 'success' ) {
+                            this.module     =   '';
+                            document.location   =   response.route;
+                        }
+                    }, 2000 );
                 }
                 xhr.send( form );
 
@@ -186,7 +200,7 @@ Vue.component( 'app-modules', {
     },
     computed : {
         modulesRows() {
-            let totalLines  =   Math.round( Object.values( this.modules ).length / this.perLines );
+            let totalLines  =   Math.ceil( Object.values( this.modules ).length / this.perLines );
             let modulesRows     =   [];
             for ( let i = 0; i < totalLines ; i++ ) {
                 modulesRows[i]  =   Object.values( this.modules ).splice( i * this.perLines, this.perLines );

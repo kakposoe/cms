@@ -9,3 +9,10 @@
     <small class="form-text text-muted">{{ @$field->description }}</small>
     @endif
 </div>
+<v-text-field
+    id="testing"
+    name="{{ $field->name }}"
+    type="email"
+    error="true"
+    label="{{ $field->label }}"
+></v-text-field>

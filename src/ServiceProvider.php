@@ -25,9 +25,10 @@ use Tendoo\Core\Console\Commands\MakeModuleServiceProvider;
 use Tendoo\Core\Console\Commands\EnvEditorSetCommand;
 use Tendoo\Core\Console\Commands\EnvEditorGetCommand;
 use Tendoo\Core\Console\Commands\PublishCommand;
-use Illuminate\Routing\Router;
-use Jackiedo\DotenvEditor\DotenvEditor;
 use Tendoo\Core\Http\TendooKernel;
+use Tendoo\Core\Exceptions\TendooHandler;
+use Jackiedo\DotenvEditor\DotenvEditor;
+use Illuminate\Routing\Router;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\AliasLoader;
@@ -217,6 +218,24 @@ class ServiceProvider extends CoreServiceProvider
         $this->app->singleton( 'XmlParser', function ($app) {
             return new XmlReader(new XmlDocument($app));
         });
+
+        /**
+         * overriding the exception handler
+         */
+        $this->app->singleton(
+            \Illuminate\Contracts\Debug\ExceptionHandler::class,
+            TendooHandler::class
+        );
+
+        /**
+         * Overriding the Kernel class
+         */
+        $this->app->singleton(
+            \Illuminate\Contracts\Http\Kernel::class,
+            TendooKernel::class
+        );
+
+
     }
 
     /**

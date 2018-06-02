@@ -16,4 +16,27 @@
     @endif
     <br>
 </div>
+<app-checkbox-{{ $field->name }} inline-template>
+    <v-checkbox
+    v-model="{{ $field-name }}"
+        name="{{ $field->name }}"
+        label="{{ $field->label }}?"
+    ></v-checkbox>
+</app-checkbox-{{ $field->name }}>
 <input name="_checkbox[]" value="{{ $field->name }}" type="hidden"/>
+@push( 'vue.components' )
+<script>
+Vue.component( 'app-checkbox-{{ $field->name }}', {
+    data() {
+        return {
+            return Object.assign({}, {
+                {{ $field->name }} : ''
+            })
+        }
+    },
+    mounted() {
+        alert( 'ok' );
+    }
+})
+</script>
+@endpush

@@ -150,14 +150,14 @@ class ModulesController extends TendooController
                 $response   =   [
                     'status'    =>  'danger',
                     'message'   =>  __( 'The zip file is not a valid module.' ),
-                    'route'     =>  'dashboard.modules.list'
+                    'route'     =>  route( 'dashboard.modules.list' )
                 ];
             break;
             case 'old_module' : 
                 Event::fire( 'after.uploading.module', $result );
                 $response   =   [
                     'status'    =>  'info',
-                    'route'     =>  'dashboard.modules.list',
+                    'route'     =>  route( 'dashboard.modules.list' ),
                     /**
                      * @todo we might offer solution to overwrite existing module
                      */
@@ -169,7 +169,7 @@ class ModulesController extends TendooController
                 $response   =   [
                     'status'    =>  'success',
                     'message'   =>  __( 'the module has been installed.' ),
-                    'route'     =>  'dashboard.modules.list'
+                    'route'     =>  route( 'dashboard.modules.list' )
                 ];
             break;
             case 'check_for_migration':
@@ -178,7 +178,7 @@ class ModulesController extends TendooController
                     'status'    =>  'success',
                     'message'   =>  __( 'the module has been installed.' ),
                     'namespace' =>  $result[ 'module' ][ 'namespace' ],
-                    'route'     =>  'dashboard.modules.migration'
+                    'route'     =>  route( 'dashboard.modules.migration' )
                 ];
             break;
             default:
@@ -186,7 +186,7 @@ class ModulesController extends TendooController
                 $response       =   [
                     'status'    =>  'info',
                     'message'   =>  __( 'An unexpected error occured.' ),
-                    'route'     =>  'dashboard.modules.list'
+                    'route'     =>  route( 'dashboard.modules.list' )
                 ];
             break;
         }

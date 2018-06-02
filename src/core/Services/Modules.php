@@ -4,6 +4,7 @@ namespace Tendoo\Core\Services;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Tendoo\Core\Services\Helper;
+use Tendoo\Core\Exceptions\InvalidModuleException;
 use XmlParser;
 use PhpParser\Error;
 use PhpParser\NodeDumper;
@@ -456,10 +457,7 @@ class Modules
                  */
                 $this->__clearTempFolder();
                 
-                return [
-                    'status'    =>  'danger',
-                    'code'      =>  'invalid_module'
-                ];
+                throw new InvalidModuleException;
             }
         }
     }

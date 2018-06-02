@@ -1,19 +1,45 @@
-<div class="form-group">
+<app-select-{{ $field->name }} inline-template>
+    <v-select
+        :items="options"
+        name="{{ $field->name }}"
+        label="{{ $field->label }}"
+        single-line
+        v-model="selected"
+        value="{{ @$field->value }}"
+        hint="{{ @$field->description }}"
+    ></v-select>
+</app-select-{{ $field->name }}>
+@push( 'vue.components' )
+<script>
 
-    <label for="{{ $field->name }}">{{ $field->label }}</label>
-    
-    <select name="{{ $field->name }}" class="form-control">
-        @foreach( ( array ) @$field->options as $value => $text )
-            <option value="{{ $value }}" {{ $value == @$field->value ? 'selected="selected"' : '' }}>{{ $text }}</option>
-        @endforeach
-    </select>
+@php
+$options    =   [];
+foreach( $field->options as $value => $text ) {
+    $options[]  =   compact( 'value', 'text' );
+}
+@endphp
 
-    @if ( $errors->has( $field->name ) )
-    <div class="invalid-feedback d-block">
-        {{ $errors->first( $field->name ) }}
-    </div>
-    @else
-    <small class="form-text text-muted">{{ @$field->description }}</small>
-    @endif
+var {{ $field->name }} = {
+    options             :   @json( $options ),
+    {{ $field->name }}  :   '',
+    value               :   '{{ $field->value }}'
+};
 
-</div>
+Vue.component( 'app-select-{{ $field->name }}', {
+    data() {
+        return Object.assign({
+            selected : ''
+        }, {{ $field->name }})
+    },
+    mounted() {
+        this.options.forEach( ( option ) => {
+            console.log( option, this.value );
+            if ( option.value == this.value ) {
+                this.selected   =   option;
+            }
+        })
+        // console.log( this.selected, this.value );
+    }
+})
+</script>
+@endpush
