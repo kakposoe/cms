@@ -1,21 +1,53 @@
 @inject( 'UserOptions', 'Tendoo\Core\Services\UserOptions' )
 @inject( 'Auth', 'Illuminate\Support\Facades\Auth' )
 @section( 'partials.shared.head' )
-    <link rel="stylesheet" href="{{ asset( 'tendoo/node_modules/material-components-web/dist/material-components-web.css' ) }}">
-    <link rel="stylesheet" href="{{ asset( 'tendoo/css/backend.css' ) }}">
-    <link rel="stylesheet" href="{{ asset( 'tendoo/css/themes/' . $UserOptions->get( 'theme_class' ) . '.css' ) }}">
-    <!-- Scroll Bar CSS -->
-    <link rel="stylesheet" href="{{ asset( 'tendoo/css/simplebar.css' ) }}" />
-
-    <script src="{{ asset( 'tendoo/bower_components/jquery/dist/jquery.min.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/js/jquery.extended.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/js/truncate.vue.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/bower_components/vue/dist/vue.min.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/bower_components/axios/dist/axios.min.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/bower_components/vue-router/dist/vue-router.min.js' ) }}"></script>
+    <link rel="stylesheet" href="{{ asset( 'tendoo/css/main.css' ) }}">
+    <!-- Icons.css -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/icons/fuse-icon-font/style.css' ) }}" />
+    <!-- Animate.css -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/node_modules/animate.css/animate.min.css' ) }}" />
+    <!-- PNotify -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/node_modules/pnotify/dist/PNotifyBrightTheme.css' ) }}" />
+    <!-- Nvd3 - D3 Charts -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/node_modules/nvd3/build/nv.d3.min.css' ) }}" />
+    <!-- Perfect Scrollbar -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/node_modules/perfect-scrollbar/css/perfect-scrollbar.css' ) }}" />
+    <!-- Fuse Html -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/fuse-html/fuse-html.min.css' ) }}" />
+    <!-- Main CSS -->
+    <link type="text/css" rel="stylesheet" href="{{ asset( 'tendoo/css/main.css' ) }}" />
+    
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/jquery/dist/jquery.min.js' ) }}"></script>
+    <!-- Mobile Detect -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/mobile-detect/mobile-detect.min.js' ) }}"></script>
+    <!-- Perfect Scrollbar -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js' ) }}"></script>
+    <!-- Popper.js -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/popper.js/dist/umd/popper.min.js' ) }}"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/bootstrap/dist/js/bootstrap.min.js' ) }}"></script>
+    <!-- Nvd3 - D3 Charts -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/d3/d3.min.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/nvd3/build/nv.d3.min.js' ) }}"></script>
+    <!-- Data tables -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/datatables.net/js/jquery.dataTables.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/datatables-responsive/js/dataTables.responsive.js' ) }}"></script>
+    <!-- PNotify -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotify.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyStyleMaterial.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyButtons.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyCallbacks.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyMobile.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyHistory.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyDesktop.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyConfirm.js' ) }}"></script>
+    <script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyReference.js' ) }}"></script>
+    <!-- Fuse Html -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/fuse-html/fuse-html.min.js' ) }}"></script>
+    <!-- Main JS -->
+    <script type="text/javascript" src="{{ asset( 'tendoo/js/main.js' ) }}"></script>
 @endsection
 @section( 'partials.shared.footer' )
-    <script src="{{ asset( 'tendoo/js/dashboard/options.js' ) }}"></script>
     <script>
         var tendooApi               =   new Object;
 
@@ -40,13 +72,6 @@
             deleteUrl       :   "{{ route( 'user-ajax.delete.options' ) }}"
         });
     </script>
-    
-    <script src="{{ asset( 'tendoo/bower_components/popper.js/dist/umd/popper.min.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/bower_components/bootstrap-material-design/js/bootstrap-material-design.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/node_modules/material-components-web/dist/material-components-web.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/js/dashboard/md-snackbar.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/js/dashboard/aside.vue.js' ) }}"></script>
-    <script src="{{ asset( 'tendoo/js/dashboard/navbar.vue.js' ) }}"></script>
     <script>
     $(document).ready(function() { 
         // $('body').bootstrapMaterialDesign(); 

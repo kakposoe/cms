@@ -24,4 +24,7 @@
         axios.defaults.headers.common['X-CSRF-TOKEN'] = '{{ csrf_token() }}';
     </script>
 </head>
-<body class="{{ $User->getOption( 'theme_class', 'default-theme' ) }}">
+<!-- <body class="{{ $User->getOption( 'theme_class', 'default-theme' ) }}"> -->
+<body class="layout layout-vertical layout-left-navigation layout-below-toolbar layout-below-footer">
+    <main>
+        <div id="wrapper">
