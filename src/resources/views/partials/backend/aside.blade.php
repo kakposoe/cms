@@ -1,21 +1,28 @@
-<ul id="tendoo-aside-menu" class="list-group pt-0 aside-menu {{ @$tree > 0 ? 'sub-menu tree-' . $tree : '' }} pb-0">
-	@foreach( $menus as $menu )
-	<li @click="toggle( this, $event )" class="list-group-item menu-{{ str_replace( '.', '-', $menu->namespace ) }} open">
-		<a href="{{ @$menu->href ? $menu->href : '#' }}" class="ripple d-flex flex-row align-items-center justify-content-between">
-			<span class="d-flex flex-row align-items-center">
-				@if( @$menu->icon )
-				<i class="material-icons mr-2">{{ $menu->icon }}</i>
-				@endif
+@inject( 'Menus', 'Tendoo\Core\Services\Menus' )
+@inject( 'Hook', 'Tendoo\Core\Facades\Hook' )
+@inject( 'UserOptions', 'Tendoo\Core\Services\UserOptions' )
+<aside id="aside" class="aside aside-left" data-fuse-bar="aside" data-fuse-bar-media-step="md" data-fuse-bar-position="left">
+    <div class="aside-content bg-primary-700 text-auto">
 
-				<span>{{ $menu->text }}</span>
-			</span>
+        <div class="aside-toolbar">
 
-			@if( @$menu->childrens )
-			<i class="material-icons arrow">keyboard_arrow_down</i>
-			@endif
-		</a>
-		@if( @$menu->childrens ) @include( 'tendoo::partials.backend.aside', [ 'menus' => $menu->childrens, 'tree' => intval( @$tree
-		) + 1 ]) @endif
-	</li>
-	@endforeach
-</ul>
+            <div class="logo">
+                <span class="logo-icon">F</span>
+                <span class="logo-text">FUSE</span>
+            </div>
+
+            <button id="toggle-fold-aside-button" type="button" class="btn btn-icon d-none d-lg-block" data-fuse-aside-toggle-fold>
+                <i class="icon icon-backburger"></i>
+            </button>
+
+        </div>
+
+        @include( 'tendoo::partials.backend.aside-menu', [
+            'menus'     =>  $Menus->get(),
+            'tree'      =>  0,
+            'parent'    =>  null,
+        ]);
+        
+    </div>
+
+</aside>
