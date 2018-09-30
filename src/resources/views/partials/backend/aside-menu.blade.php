@@ -18,6 +18,7 @@
         <a 
             href="{{ @$menu->href ? $menu->href : '#' }}" 
             class="
+                d-flex flex-row align-items-center
                 nav-link ripple 
                 <?php echo @$menu->href == url()->current() ? 'active' : null;?> 
                 <?php echo @$menu->childrens ? 'with-arrow collapsed' : null;?>
@@ -27,18 +28,14 @@
                 data-target="#{{ $menu->namespace }}-children-wrapper"
             @endif
             >
-            <span class="d-flex flex-row align-items-center">
-
-                @if( @$menu->icon )
-                <i 
-                    style="font-size:18px;text-align:center;display:inline-block;line-height: 25px;" 
-                    class="material-icons mr-2">
-                    {{ $menu->icon }}
-                </i>
-                @endif
-                
-                <span>{{ $menu->text }}</span>
-            </span>
+            @if( @$menu->icon )
+            <i 
+                style="font-size:18px;text-align:center;display:inline-block;line-height: 25px;" 
+                class="material-icons mr-2">
+                {{ $menu->icon }}
+            </i>
+            @endif
+            <span>{{ $menu->text }}</span>
         </a>
         @if( @$menu->childrens ) 
             @include( 'tendoo::partials.backend.aside-menu', [ 

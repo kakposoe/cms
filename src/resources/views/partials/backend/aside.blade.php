@@ -21,7 +21,7 @@
             'menus'     =>  $Menus->get(),
             'tree'      =>  0,
             'parent'    =>  null,
-        ]);
+        ])
         
     </div>
 

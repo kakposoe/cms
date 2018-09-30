@@ -1,0 +1,25 @@
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/jquery/dist/jquery.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/popper.js/dist/umd/popper.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/bootstrap/dist/js/bootstrap.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/material-components-web/dist/material-components-web.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/bower_components/axios/dist/axios.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/bower_components/vue/dist/vue.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/mobile-detect/mobile-detect.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/pnotify.custom.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/d3/d3.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/nvd3/build/nv.d3.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/datatables.net/js/jquery.dataTables.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/datatables-responsive/js/dataTables.responsive.js' ) }}"></script>
+<!-- PNotify -->
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotify.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyStyleMaterial.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyButtons.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyCallbacks.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyMobile.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyHistory.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyDesktop.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyConfirm.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/node_modules/pnotify/dist/iife/PNotifyReference.js' ) }}"></script> 
+<script type="text/javascript" src="{{ asset( 'tendoo/fuse-html/fuse-html.min.js' ) }}"></script>
+<script type="text/javascript" src="{{ asset( 'tendoo/js/main.js' ) }}"></script>
